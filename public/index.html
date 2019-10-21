@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+    <title>My Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--   
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    -->
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+    <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+    
+    <div data-role="page">
+        <div id='welcomeScreen' class="centered">
+            <div id='nonGameArea' class='none-game-area'>
+                <h1> Mafia! </h1>
+            </div>
+
+            <div id='loginArea' class="centered">
+                <p><input id="name" type="text" placeholder="Name" ></p>
+                <p><input id="room" type="text" placeholder="Room"></p>
+                <button class="large button" onclick="join()">Join</button>
+            </div>
+            
+            <div id='roomCode' class='room-code'>
+                <p id='code'> Room Code: ABCDEF </p>
+            </div>
+            
+            <div id='startGame'>
+                <p> <button class="button" onclick="start()">Start the Game</button> </p>
+            </div>
+            
+            <div id='listArea' class='list-area'>
+                <h4> Players in Game </h4>
+                <ul></ul>
+            </div>
+        </div>
+
+        <div id='gameArea'>
+            <div id='DayPhase'> <p style="text-align:center"> This is the Day Phase</p></div>
+            <div id='NightPhase'> <p style="text-align:center"> This is the Night Phase</p></div>
+            <progress style="width:100%;" value="5" max="5" id="progressBar"></progress>
+            <div><p id='countdown' style="display:none">30</p></div>
+            <div class='ui-grid-b ui-responsive' id="dynamicbutton">
+                <ul class="buttonGrid" id="buttonGridID">
+
+                </ul>
+            </div>
+        </div>
+        
+    </div><!-- /page -->
+</body>
+</html>
