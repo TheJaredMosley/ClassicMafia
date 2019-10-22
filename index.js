@@ -54,4 +54,4 @@ function transition(){
     io.emit('transition');
 };
 
-setInterval(transition, 5100);
+//setInterval(transition, 5100);

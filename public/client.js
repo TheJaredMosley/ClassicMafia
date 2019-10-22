@@ -1,33 +1,13 @@
 $(function(){
-    //login();
-    var names = ['Jared', 'James', 'Adam', 'Mark', 'Anna', 'Blake', 'Daniel', "Emily", "Sharon", "Chris", "Harper", "Wade Porter", "William P.", "Bryan"]
-    console.log(names);
-
-    var column = ["ui-block-a", "ui-block-b", "ui-block-c"];
-
-    for (i = 0; i < names.length; i++){
-        // var blockIndex = i - 3 * Math.floor(i/3);
-
-        // var div = document.createElement("div");
-        // div.setAttribute('class', column[blockIndex]);
-
-        // var input = document.createElement("input");
-        // input.setAttribute('type', "button");
-        // input.setAttribute('value', names[i]);
-
-        // div.append(input)
-
-        var div = document.createElement('button');
-        div.setAttribute('content', 'test content');
-        div.setAttribute('class', "large button ui-btn ui-shadow ui-corner-all")
-        div.innerHTML = names[i];
-
-        $('#buttonGridID').append(div).trigger('create');
-    }
+    login();
+    //var names = ['Jared', 'James', 'Adam', 'Mark', 'Anna', 'Blake', 'Daniel', "Emily", "Sharon", "Chris", "Harper", "Wade Porter", "William P.", "Bryan"]
+    //console.log(names);
 
 });
 
 var timeLeft = 0;
+
+var names =[]
 
 function startClock(){
     if(timeLeft >= 0){
@@ -50,6 +30,7 @@ socket.on('updateRoomNumber', number => {
 
 socket.on('updateRoom', clients => {
     waiting();
+    names = clients;
     document.getElementById('listArea').innerHTML = "";
     document.getElementById('listArea').appendChild(makeUL(clients));
 });
@@ -81,6 +62,10 @@ socket.on('transition', data => {
     }, 1000)
 });
 
+socket.on('deal', data => {
+    gameOn();
+});
+
 function waiting(){
     $('#loginArea').hide();
     $('#roomCode').show();
@@ -93,6 +78,25 @@ function login(){
     $('#roomCode').hide();
     $('#startGame').hide();
     $('#listArea').hide();
+    $('#phaseIndicator').hide();
+}
+
+function gameOn(){
+    $('#phaseIndicator').show();
+    $('#gameArea').show();
+    $('#roomCode').show();
+    $('#listArea').hide();
+    $('#startGame').hide();
+    $('#loginArea').hide();
+
+    for (i = 0; i < names.length; i++){
+        var div = document.createElement('button');
+        div.setAttribute('content', 'test content');
+        div.setAttribute('class', "large button ui-btn ui-shadow ui-corner-all")
+        div.innerHTML = names[i];
+
+        $('#buttonGridID').append(div).trigger('create');
+    }
 }
 
 function join(){
@@ -120,4 +124,4 @@ function makeUL(array) {
 
 function start(){
     socket.emit('start');
-  }
+}

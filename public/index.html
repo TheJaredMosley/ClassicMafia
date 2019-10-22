@@ -19,16 +19,14 @@
         <div id='welcomeScreen' class="centered">
             <div id='nonGameArea' class='none-game-area'>
                 <h1> Mafia! </h1>
+                <h2 id="phaseIndicator">Day Phase</h2> 
+                
             </div>
 
             <div id='loginArea' class="centered">
                 <p><input id="name" type="text" placeholder="Name" ></p>
                 <p><input id="room" type="text" placeholder="Room"></p>
                 <button class="large button" onclick="join()">Join</button>
-            </div>
-            
-            <div id='roomCode' class='room-code'>
-                <p id='code'> Room Code: ABCDEF </p>
             </div>
             
             <div id='startGame'>
@@ -42,15 +40,16 @@
         </div>
 
         <div id='gameArea'>
-            <div id='DayPhase'> <p style="text-align:center"> This is the Day Phase</p></div>
-            <div id='NightPhase'> <p style="text-align:center"> This is the Night Phase</p></div>
-            <progress style="width:100%;" value="5" max="5" id="progressBar"></progress>
+            <!-- <progress style="width:100%;" value="5" max="5" id="progressBar"></progress> -->
             <div><p id='countdown' style="display:none">30</p></div>
             <div class='ui-grid-b ui-responsive' id="dynamicbutton">
                 <ul class="buttonGrid" id="buttonGridID">
 
                 </ul>
             </div>
+        </div>
+        <div id='roomCode' class='centered'>
+            <p id='code'><b>Room Code: ABCDEF</b>  </p>
         </div>
         
     </div><!-- /page -->
