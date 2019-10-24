@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
     -->
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <!-- <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
     <link rel="stylesheet" type="text/css" href="main.css">
@@ -42,6 +42,7 @@
         <div id='gameArea'>
             <!-- <progress style="width:100%;" value="5" max="5" id="progressBar"></progress> -->
             <div><p id='countdown' style="display:none">30</p></div>
+            <div id=infoButton><button id="showInfo" class="button">Info</button> </div>
             <div class='ui-grid-b ui-responsive' id="dynamicbutton">
                 <ul class="buttonGrid" id="buttonGridID">
 
@@ -50,6 +51,19 @@
         </div>
         <div id='roomCode' class='centered'>
             <p id='code'><b>Room Code: ABCDEF</b>  </p>
+        </div>
+
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+
+            <!-- Modal content -->
+            <div id=modalContent class="modal-content centered">
+            <span class="close" id="closeModel">&times;</span>
+            <h1 id="roleID">You are the Mafia!</h1>
+            <h2> Your Job is to work with all the other mafia members and kill the villagers</h2>
+            <br>
+            </div>
+        
         </div>
         
     </div><!-- /page -->

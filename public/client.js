@@ -1,7 +1,25 @@
 $(function(){
     login();
-    //var names = ['Jared', 'James', 'Adam', 'Mark', 'Anna', 'Blake', 'Daniel', "Emily", "Sharon", "Chris", "Harper", "Wade Porter", "William P.", "Bryan"]
-    //console.log(names);
+    var modal = document.getElementById("myModal");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementById("closeModel");
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    var infoButton = document.getElementById('infoButton').getElementsByTagName('button')[0];
+
+    infoButton.onclick = showModal;
 
 });
 
@@ -64,6 +82,25 @@ socket.on('transition', data => {
 
 socket.on('deal', data => {
     gameOn();
+    console.log(data);
+    var roleID = document.getElementById("roleID");
+    
+    if(data == 1){
+        roleID.innerHTML = "You are in the Mafia!";
+    }
+
+    if(data == 2){
+        roleID.innerHTML = "You are a Cop";
+    }
+
+    if(data == 3){
+        roleID.innerHTML = "You are Doctor!";
+    }
+
+    if(data == 4){
+        roleID.innerHTML = "You are Lousy Villager!";
+    }
+
 });
 
 function waiting(){
@@ -90,13 +127,19 @@ function gameOn(){
     $('#loginArea').hide();
 
     for (i = 0; i < names.length; i++){
-        var div = document.createElement('button');
-        div.setAttribute('content', 'test content');
-        div.setAttribute('class', "large button ui-btn ui-shadow ui-corner-all")
-        div.innerHTML = names[i];
+        var button = document.createElement('button');
+        button.setAttribute('nameID', names[i]);
+        button.setAttribute('class', "large button ui-btn ui-shadow ui-corner-all")
+        button.innerHTML = names[i];
+        button.setAttribute('onclick', "submitName(this.getAttribute('nameID'))")
+        
 
-        $('#buttonGridID').append(div).trigger('create');
+        $('#buttonGridID').append(button).trigger('create');
     }
+}
+
+function submitName(name){
+    socket.emit('submitName', name)
 }
 
 function join(){
@@ -124,4 +167,9 @@ function makeUL(array) {
 
 function start(){
     socket.emit('start');
+}
+
+function showModal(){
+    var modal = document.getElementById("myModal");
+    modal.style.display = "block";
 }
