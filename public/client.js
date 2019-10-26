@@ -39,6 +39,7 @@ function startClock(){
 var socket = io();
 
 var day = true;
+var role = 0;
 var timer;
 $('#NightPhase').hide();
 
@@ -84,6 +85,7 @@ socket.on('deal', data => {
     gameOn();
     console.log(data);
     var roleID = document.getElementById("roleID");
+    role = data;
     
     if(data == 1){
         roleID.innerHTML = "You are in the Mafia!";
@@ -103,6 +105,39 @@ socket.on('deal', data => {
 
 });
 
+socket.on('submitRecieved', () =>{
+    console.log('Thanks for the submission');
+    $('#gameArea').hide();
+    $('#waitingScreen').show();
+});
+
+socket.on('villagerError', () => {
+    console.log('village Error');
+    alert('If you are a villager you must pick your own name');
+});
+
+
+//Some weird stuff is happening with this. For some reason the alert is being called twice...
+//And then the server seems to be crashing? I dunno. Real weird.
+socket.on('goToDay', data =>{
+    console.log('Day Phase');
+    if(role === 2){
+        alert(data[0]);
+        alert(data[1]);
+    }else{
+        alert(data);
+    }
+    $('#gameArea').show();
+    $('#waitingScreen').hide();
+
+});
+
+socket.on('goToNight', data =>{
+    console.log('Night Phase');
+});
+
+
+
 function waiting(){
     $('#loginArea').hide();
     $('#roomCode').show();
@@ -112,6 +147,7 @@ function waiting(){
 
 function login(){
     $('#gameArea').hide();
+    $('#waitingScreen').hide();
     $('#roomCode').hide();
     $('#startGame').hide();
     $('#listArea').hide();
