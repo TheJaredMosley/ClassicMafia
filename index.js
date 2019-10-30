@@ -163,7 +163,7 @@ io.on('connection', function(socket){
 
         if(game.savedPerson != killed){
           message = killed + " was killed in the night!";
-          io.emit('killPlayer', killed);
+          io.to(socket.lobbyRoom).emit('killPlayer', killed);
           game.alivePlayerCount--;
           if(game.userMap.get(killed).role == 1){
             game.numAliveMafia--;
@@ -204,10 +204,10 @@ io.on('connection', function(socket){
 
     }else{
       if(user.name === game.accused){
-        io.emit('goToVote', user.name);
+        io.to(socket.lobbyRoom).emit('goToVote', user.name);
       }else{
         game.accused = user.name;
-        io.emit('accused', game.accused);
+        io.to(socket.lobbyRoom).emit('accused', game.accused);
       }
     }
 
@@ -234,8 +234,8 @@ io.on('connection', function(socket){
       game.submittedCount = 0;
 
       if(game.yesVotes > game.noVotes){
-        io.emit('goToNight', [game.accused, game.votingRecord]);
-        io.emit('killPlayer', game.accused);
+        io.to(socket.lobbyRoom).emit('goToNight', [game.accused, game.votingRecord]);
+        io.to(socket.lobbyRoom).emit('killPlayer', game.accused);
         game.alivePlayerCount--;
         if(game.userMap.get(game.accused).role == 1){
           game.numAliveMafia--;
@@ -243,7 +243,7 @@ io.on('connection', function(socket){
         killPlayer(socket, game.accused);
         game.phase = 1;
       }else{
-        io.emit('voteUnsuccesful', game.votingRecord);
+        io.to(socket.lobbyRoom).emit('voteUnsuccesful', game.votingRecord);
       }
       game.yesVotes = 0;
       game.noVotes = 0;
@@ -261,17 +261,17 @@ function killPlayer(socket, name){
       io.to(client).emit('yourDead');
     }
   }
-  checkWinCondition(gameMap.get(socket.lobbyRoom));
+  checkWinCondition(socket, gameMap.get(socket.lobbyRoom));
 }
 
-function checkWinCondition(game){
+function checkWinCondition(socket, game){
   console.log("Total Players: " + game.alivePlayerCount);
   console.log("Mafia: " + game.numAliveMafia);
   if(game.numAliveMafia >= (game.alivePlayerCount - game.numAliveMafia)){
-    io.emit('win', "The Mafia has won!");
+    io.to(socket.lobbyRoom).emit('win', "The Mafia has won!");
   }
 
   if(game.numAliveMafia <= 0){
-    io.emit('win', "The villagers have won!");
+    io.to(socket.lobbyRoom).emit('win', "The villagers have won!");
   }
 }
