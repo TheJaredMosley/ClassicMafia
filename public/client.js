@@ -146,6 +146,11 @@ socket.on('yourDead', () =>{
     $('#deathScreen').show();
 });
 
+socket.on('win', data => {
+    gameover(data);
+    isdead = true;
+});
+
 
 //Some weird stuff is happening with this. For some reason the alert is being called twice...
 //And then the server seems to be crashing? I dunno. Real weird.
@@ -305,4 +310,14 @@ function changeButtonColor(dataList){
             }
         }
     }
+}
+
+function gameover(message){
+    $('#gameArea').hide();
+    $('#deathScreen').hide();
+    $('#waitingScreen').hide();
+    $('#welcomeScreen').hide();
+    $('#roomCode').hide();
+    $('#gameOver').show();
+    $('#gameOver').html(message);
 }

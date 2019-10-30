@@ -38,6 +38,7 @@ io.on('connection', function(socket){
       gameObj.phase = 1;
       gameObj.mafiaVote = [];
       gameObj.savedPerson = '';
+      gameObj.numAliveMafia = 0;
       gameObj.copCheck = '';
       gameObj.accused = '';
       gameObj.yesVotes = 0;
@@ -87,6 +88,7 @@ io.on('connection', function(socket){
     }
 
     gameMap.get(socket.lobbyRoom).alivePlayerCount = roles.length;
+    gameMap.get(socket.lobbyRoom).numAliveMafia = numMafia;
 
     
 
@@ -162,8 +164,11 @@ io.on('connection', function(socket){
         if(game.savedPerson != killed){
           message = killed + " was killed in the night!";
           io.emit('killPlayer', killed);
-          killPlayer(socket, killed);
           game.alivePlayerCount--;
+          if(game.userMap.get(killed).role == 1){
+            game.numAliveMafia--;
+          }
+          killPlayer(socket, killed);
         }else{
           message = killed + " was attacked but the doctor interviend!";
         }
@@ -231,8 +236,11 @@ io.on('connection', function(socket){
       if(game.yesVotes > game.noVotes){
         io.emit('goToNight', [game.accused, game.votingRecord]);
         io.emit('killPlayer', game.accused);
-        killPlayer(socket, game.accused);
         game.alivePlayerCount--;
+        if(game.userMap.get(game.accused).role == 1){
+          game.numAliveMafia--;
+        }
+        killPlayer(socket, game.accused);
         game.phase = 1;
       }else{
         io.emit('voteUnsuccesful', game.votingRecord);
@@ -253,10 +261,17 @@ function killPlayer(socket, name){
       io.to(client).emit('yourDead');
     }
   }
+  checkWinCondition(gameMap.get(socket.lobbyRoom));
 }
 
 function checkWinCondition(game){
-  //If Number of Alive Mafia >= Number of Alive Citizens then Mafia Wins.
+  console.log("Total Players: " + game.alivePlayerCount);
+  console.log("Mafia: " + game.numAliveMafia);
+  if(game.numAliveMafia >= (game.alivePlayerCount - game.numAliveMafia)){
+    io.emit('win', "The Mafia has won!");
+  }
 
-  //If Number of Alize Mafia == 0 then Citizens win.
+  if(game.numAliveMafia <= 0){
+    io.emit('win', "The villagers have won!");
+  }
 }
