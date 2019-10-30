@@ -39,7 +39,11 @@ io.on('connection', function(socket){
       gameObj.mafiaVote = [];
       gameObj.savedPerson = '';
       gameObj.copCheck = '';
+      gameObj.accused = '';
+      gameObj.yesVotes = 0;
+      gameObj.noVotes = 0;
       gameObj.alivePlayerCount = 0;
+      gameObj.votingRecord = [];
       gameObj.userMap = new Map();
 
       gameMap.set(data.room, gameObj);
@@ -104,6 +108,10 @@ io.on('connection', function(socket){
     
   });
   
+
+  //Need to work on the Day phase now. Voting and stuff.
+  //Also need to make sure the person the mafia killed is removed from the user count?
+  //Maybe even delete the user button, and give a death screen.
   socket.on('submitName', (data) =>{
     var game = gameMap.get(socket.lobbyRoom);
     var user = gameMap.get(socket.lobbyRoom).userMap.get(data);
@@ -153,6 +161,9 @@ io.on('connection', function(socket){
 
         if(game.savedPerson != killed){
           message = killed + " was killed in the night!";
+          io.emit('killPlayer', killed);
+          killPlayer(socket, killed);
+          game.alivePlayerCount--;
         }else{
           message = killed + " was attacked but the doctor interviend!";
         }
@@ -170,7 +181,7 @@ io.on('connection', function(socket){
               break;
             case 2:
               var data;
-              if(game.userMap.get(game.copCheck).role == 1){
+              if(game.copCheck != "" && game.userMap.get(game.copCheck).role == 1){
                 data = "You discovered " + game.copCheck + " IS in the Mafia!"
               }else{
                 data = "You found out " + game.copCheck + " is NOT in the Mafia."
@@ -187,15 +198,65 @@ io.on('connection', function(socket){
       }
 
     }else{
-      io.emit('goToNight');
-      game.phase = 1;
+      if(user.name === game.accused){
+        io.emit('goToVote', user.name);
+      }else{
+        game.accused = user.name;
+        io.emit('accused', game.accused);
+      }
+    }
+
+  });
+
+  socket.on('voting', data => {
+    var game = gameMap.get(socket.lobbyRoom);
+    var user = gameMap.get(socket.lobbyRoom).userMap.get(socket.name);
+
+    //Take away the alerts and change it with something else
+
+
+    game.submittedCount++;
+
+    if (data == 1){
+      game.yesVotes++;
+      game.votingRecord.push([user.name, 1]);
+    }else{
+      game.noVotes++;
+      game.votingRecord.push([user.name, 0]);
+    }
+
+    if(game.submittedCount >= game.alivePlayerCount){
+      game.submittedCount = 0;
+
+      if(game.yesVotes > game.noVotes){
+        io.emit('goToNight', [game.accused, game.votingRecord]);
+        io.emit('killPlayer', game.accused);
+        killPlayer(socket, game.accused);
+        game.alivePlayerCount--;
+        game.phase = 1;
+      }else{
+        io.emit('voteUnsuccesful', game.votingRecord);
+      }
+      game.yesVotes = 0;
+      game.noVotes = 0;
+      
     }
 
   });
 });
 
-function transition(){
-    io.emit('transition');
-};
+function killPlayer(socket, name){
+  var clients = io.sockets.adapter.rooms[socket.lobbyRoom].sockets;
+  for(var client in clients){
+    var tempName = io.sockets.connected[client].name;
+    if(tempName == name){
+      io.to(client).emit('yourDead');
+    }
+  }
+}
 
-//setInterval(transition, 5100);
+function checkWinCondition(game){
+  //If Number of Alive Mafia >= Number of Alive Citizens then Mafia Wins.
+
+  //If Number of Alize Mafia == 0 then Citizens win.
+}

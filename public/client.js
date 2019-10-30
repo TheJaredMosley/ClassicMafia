@@ -24,6 +24,7 @@ $(function(){
 });
 
 var timeLeft = 0;
+var isdead = false;
 
 var names =[]
 
@@ -116,24 +117,87 @@ socket.on('villagerError', () => {
     alert('If you are a villager you must pick your own name');
 });
 
+socket.on('voteUnsuccesful', data => {
+    if(!isdead){
+        $('#gameArea').show();
+        $('#voting').hide();
+        $('#waitingScreen').hide();
+        changeButtonColor(data);
+    }
+    
+})
+
+socket.on('killPlayer', data =>{
+    var buttons = document.getElementById('buttonGridID').getElementsByTagName('button');
+
+    console.log('KILLT ' + data);
+    for(var i = 0; i < buttons.length; i++){
+        if(data == buttons[i].getAttribute('nameID')){
+            buttons[i].disabled = true;
+            buttons[i].style.background = "#A9A9A9";
+        }
+    }
+});
+
+socket.on('yourDead', () =>{
+    console.log('your dead');
+    isdead = true;
+    login();
+    $('#deathScreen').show();
+});
+
 
 //Some weird stuff is happening with this. For some reason the alert is being called twice...
 //And then the server seems to be crashing? I dunno. Real weird.
 socket.on('goToDay', data =>{
-    console.log('Day Phase');
-    if(role === 2){
-        alert(data[0]);
-        alert(data[1]);
-    }else{
-        alert(data);
+    if(!isdead){
+        $('phaseIndicator').innerHTML = "Day Phase";
+        console.log('Day Phase');
+        if(role === 2){
+            alert(data[0]);
+            alert(data[1]);
+        }else{
+            alert(data);
+        }
+        $('#gameArea').show();
+        $('#waitingScreen').hide();
     }
-    $('#gameArea').show();
-    $('#waitingScreen').hide();
+    
 
 });
 
+socket.on('goToVote', data =>{
+    if(!isdead){
+        $('#accusedID').html("");
+        $('#votingText').html("Do you think " + data + " is in the Mafia?");
+        $('#voting').show();
+        $('#gameArea').hide();
+        $('#waitingScreen').hide();
+    }
+});
+
 socket.on('goToNight', data =>{
-    console.log('Night Phase');
+    if(!isdead){
+        alert(data[0] + " has been executed by the town. The night begins anew");
+        $('#phaseIndicator').html("Night Phase");
+        $('#voting').hide();
+        $('#accusedID').html("");
+        $('#accusedID').hide();
+        $('#gameArea').show();
+        $('#waitingScreen').hide();
+        changeButtonColor(data[1]);
+        console.log('Night Phase');
+    }
+    
+});
+
+socket.on('accused', data => {
+    if(!isdead){
+        $('#waitingScreen').hide();
+        $('#accusedID').show();
+        $('#accusedID').html("Accused: " + data);
+    }
+    
 });
 
 
@@ -147,11 +211,13 @@ function waiting(){
 
 function login(){
     $('#gameArea').hide();
+    $('#deathScreen').hide();
     $('#waitingScreen').hide();
     $('#roomCode').hide();
     $('#startGame').hide();
     $('#listArea').hide();
     $('#phaseIndicator').hide();
+    $('#voting').hide();
 }
 
 function gameOn(){
@@ -184,6 +250,19 @@ function join(){
     data.room = document.getElementById('room').value;
     data.name = document.getElementById('name').value;
     socket.emit('roomJoin', data);
+    var namdiv = document.getElementById('nametag');
+    namdiv.innerHTML = data.name;
+}
+
+function vote(choice){
+    console.log('voting');
+    if(choice){
+        socket.emit('voting', 1);
+    }else{
+        socket.emit('voting', 0);
+    }
+    $('#voting').hide();
+    $('#waitingScreen').show();
 }
 
 function makeUL(array) {
@@ -208,4 +287,22 @@ function start(){
 function showModal(){
     var modal = document.getElementById("myModal");
     modal.style.display = "block";
+}
+
+function changeButtonColor(dataList){
+    var buttons = document.getElementById('buttonGridID').getElementsByTagName('button');
+
+    console.log('Hitit');
+    for(var i = 0; i < buttons.length; i++){
+        for(var j = 0; j < dataList.length; j++){
+            if(dataList[j][0] == buttons[i].getAttribute('nameID')){
+                console.log(dataList[j][1]);
+                if(dataList[j][1] == 1){
+                    buttons[i].style.background = "#8dffba";
+                }else{
+                    buttons[i].style.background = "#ff9382";
+                }
+            }
+        }
+    }
 }

@@ -19,7 +19,9 @@
         <div id='welcomeScreen' class="centered">
             <div id='nonGameArea' class='none-game-area'>
                 <h1> Mafia! </h1>
-                <h2 id="phaseIndicator">Day Phase</h2> 
+                <h2 id='nametag'></h2>
+                <h2 id="phaseIndicator">Day Phase</h2>
+                <h4 id="accusedID"></h4>
                 
             </div>
 
@@ -27,6 +29,13 @@
                 <p><input id="name" type="text" placeholder="Name" ></p>
                 <p><input id="room" type="text" placeholder="Room"></p>
                 <button class="large button" onclick="join()">Join</button>
+            </div>
+
+            <div id='voting' class="centered">
+                <h3 id = "votingText">You are voting on Jared. Do you think he is in the Mafia?</h3>
+                <br>
+                <button class="large button" onclick="vote(true)">Yes!</button>
+                <button class="large button" onclick="vote(false)">No!</button>
             </div>
             
             <div id='startGame'>
@@ -41,6 +50,10 @@
 
         <div id='waitingScreen'>
             <h1> Thank you for your submission. Please wait while other players finish.</h1>
+        </div>
+
+        <div id='deathScreen'>
+            <H1>You are dead. Either the Mafia killed you or you were voted on in the day and died. Better luck next time</H1>
         </div>
 
         <div id='gameArea'>
